@@ -5,7 +5,7 @@ const ObjectId = require('mongodb').ObjectId;
 const cors = require('cors');
 require('dotenv').config();
 
-const app = express()
+const app = express();
 const port = process.env.PORT || 5000;
 
 // middleware
@@ -21,7 +21,16 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
     try{
         await client.connect();
-        console.log('database connected');
+        // console.log('database connected');
+        const database = client.db('tour_spot');
+        const tourCollection = database.collection('spots');
+
+        // GET services API
+        app.get('/spots', async(req, res) => {
+            const cursor = tourCollection.find({});
+            const spots = await cursor.toArray();
+            res.send(spots);
+        })
     }
     finally{
         // await client.close();
