@@ -25,12 +25,41 @@ async function run() {
         const database = client.db('tour_spot');
         const tourCollection = database.collection('spots');
 
-        // GET services API
+        // GET spots API
         app.get('/spots', async(req, res) => {
             const cursor = tourCollection.find({});
             const spots = await cursor.toArray();
             res.send(spots);
         })
+
+        // GET Single Spot
+        app.get('/spots/:id', async(req, res) => {
+            const id = req.params.id;
+            console.log('getting specific service', id);
+            const query = {_id: ObjectId(id)};
+            const spot = await tourCollection.findOne(query);
+            res.json(spot);
+        })
+
+        // POST API
+        app.post('/spots', async(req, res)=>{
+            const service = req.body;
+             console.log('hit the post api', service);
+           
+             const result = await tourCollection.insertOne(service);
+             console.log(result);
+            res.json(result)
+         })
+
+         // DELETE Specific API
+        app.delete('/spots/:id', async(req, res) => {
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)};
+            const result = await servicesCollection.deleteOne(query);
+            res.json(result);
+        })
+
+
     }
     finally{
         // await client.close();
